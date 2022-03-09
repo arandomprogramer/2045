@@ -450,9 +450,9 @@ gold = (255, 215, 0)
 # LOAD GRAPHICS
 sprite_sheet_file = '1945_sprite_sheet.png'
 sprite_sheet = pygame.image.load(sprite_sheet_file).convert()
-jet1 = pygame.image.load('f35_v2.jpg').convert()
+jet1 = pygame.image.load('f35_v2.png').convert()
 sprite_sheet.set_colorkey((0, 67, 171))
-jet1.set_colorkey((255, 0, 0))
+jet1.set_colorkey((65, 245, 64))
 #p1_plane_1 = sprite_sheet.subsurface(4, 400, 65, 65)
 #p1_plane_2 = sprite_sheet.subsurface(70, 400, 65, 65)
 #p1_plane_3 = sprite_sheet.subsurface(136, 400, 65, 65)
