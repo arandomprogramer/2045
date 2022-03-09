@@ -8,6 +8,8 @@ import pygame
 import random
 import sys
 
+# some change 
+
 # INITIALIZE PYGAME
 pygame.init()
 
