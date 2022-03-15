@@ -490,9 +490,6 @@ menu_graphic = 'menu.png'
 water_bg = 'waterbgext.png'
 water_bg_ext = pygame.image.load(water_bg).convert()
 menu_img = pygame.image.load(menu_graphic).convert()
-p1_plane_1.set_colorkey((0, 67, 171))
-p1_plane_2.set_colorkey((0, 67, 171))
-p1_plane_3.set_colorkey((0, 67, 171))
 e_plane_1.set_colorkey((0, 67, 171))
 e_plane_2.set_colorkey((0, 67, 171))
 e_plane_3.set_colorkey((0, 67, 171))
