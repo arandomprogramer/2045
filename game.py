@@ -270,6 +270,22 @@ def create_shot(type, x, y):
     #     f.rect.width = 500
     #     f.rect.height = 100
     #     shots.append(f)
+def closest_enemy():
+    px = players[0].rect.x
+    py = players[0].rect.y
+    print(f"Our plane position:  {px}, {py}")
+    for e in enemies:
+        ex = e.rect.center[0]
+        ey = e.rect.center[1]
+        if ey<0:
+            continue
+        x_distance = px - ex
+        y_distance = py - ey
+        print(f"Enemy postion: {ex}, {ey}   Distance: {x_distance}, {y_distance}")
+        
+
+def missile ():
+    pass
 
 def update_shots():
     for f in shots:
@@ -469,6 +485,7 @@ explode_3 = sprite_sheet.subsurface(
 explode_4 = sprite_sheet.subsurface(169, 169, 32, 32)
 explode_5 = sprite_sheet.subsurface(202, 169, 32, 32)
 explode_6 = sprite_sheet.subsurface(235, 169, 32, 32)
+missile= pygame.image.load('missile.png').convert()
 p1_explode_1 = sprite_sheet.subsurface(4, 301, 65, 65)
 p1_explode_2 = sprite_sheet.subsurface(70, 301, 65, 65)
 p1_explode_3 = sprite_sheet.subsurface(136, 301, 65, 65)
@@ -554,7 +571,8 @@ while True:
                     bomb_explosion()
                     bomb_snd.play()
                     print(f'Number of enemies AFTER bomb:  {len(enemies)}')
-                    
+                if event.key == pygame.K_e:
+                    closest_enemy()                    
 
             if event.key == pygame.K_F1 and p1.lives>0:
                 if len(players) == 0:
