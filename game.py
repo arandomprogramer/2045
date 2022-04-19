@@ -3,6 +3,7 @@
 # Shoot the enemy planes
 # Haroon Khalid
 
+from calendar import c
 import time
 import pygame
 import random
@@ -88,13 +89,13 @@ class Player(object):
         key = pygame.key.get_pressed()
 
         # Move left/right
-        if key[pygame.K_LEFT]:
+        if key[pygame.K_LEFT] or key[pygame.K_a]:
             self.rect.x -= 5
-        if key[pygame.K_RIGHT]:
+        if key[pygame.K_RIGHT] or key[pygame.K_d]:
             self.rect.x += 5
-        if key[pygame.K_UP]:
+        if key[pygame.K_UP] or key[pygame.K_w]:
             self.rect.y -= 5
-        if key[pygame.K_DOWN]:
+        if key[pygame.K_DOWN] or key[pygame.K_s]:
             self.rect.y += 5
 
         self.draw(screen)
@@ -182,6 +183,29 @@ class Fire(object):
             self.rect.y -= 20
             self.draw(screen)
 
+class Missile(object):
+    def __init__(self, type):
+        self.image = missile_1
+        self.rect = self.image.get_rect()
+        self.rect.x = 100
+        self.rect.y = 100
+        self.firing_1 = Animation(1, [[50, missile_1]])
+        self.e_firing = Animation(1, [[50, missile_1]])
+        self.anim = self.firing_1
+        self.type = type
+
+    def draw(self, dest):
+        self.anim.pos = self.rect
+        self.anim.draw(dest)
+
+    def update(self):
+        if self.type == 1:
+            self.anim = self.e_firing
+            self.rect.y += 5
+            self.draw(screen)
+        else:
+            self.rect.y -= 20
+            self.draw(screen)
 
 class Bomb(object):
     def __init__(self, type):
@@ -271,6 +295,8 @@ def create_shot(type, x, y):
     #     f.rect.height = 100
     #     shots.append(f)
 def closest_enemy():
+    c=7586347375346385476348756
+    cm  = None
     px = players[0].rect.x
     py = players[0].rect.y
     print(f"Our plane position:  {px}, {py}")
@@ -281,11 +307,24 @@ def closest_enemy():
             continue
         x_distance = px - ex
         y_distance = py - ey
-        print(f"Enemy postion: {ex}, {ey}   Distance: {x_distance}, {y_distance}")
+        print(f"Enemy postion: {ex}, {ey}   Distance: {x_distance**2+y_distance**2}")
         
+        if x_distance**2+y_distance**2<c:
+            c = x_distance**2+y_distance
+            cm = e
+    return cm
 
-def missile ():
-    pass
+def missile_fire(type, x, y):
+    if type == 1:
+        f = Missile(type)
+        f.rect.x = x + 13
+        f.rect.y = y + 100
+        shots.append(f)
+    else:
+        f = Missile(type)
+        f.rect.x = players[0].rect.x + 17
+        f.rect.y = players[0].rect.y - 101
+        shots.append(f)
 
 def update_shots():
     for f in shots:
@@ -485,7 +524,10 @@ explode_3 = sprite_sheet.subsurface(
 explode_4 = sprite_sheet.subsurface(169, 169, 32, 32)
 explode_5 = sprite_sheet.subsurface(202, 169, 32, 32)
 explode_6 = sprite_sheet.subsurface(235, 169, 32, 32)
-missile= pygame.image.load('missile.png').convert()
+missile_1 = pygame.image.load('missile.png').convert()
+missile_1= pygame.transform.scale(missile_1, (75,23) )
+missile_1= pygame.transform.rotate(missile_1, 90)
+missile_1.set_colorkey((0, 0, 0))
 p1_explode_1 = sprite_sheet.subsurface(4, 301, 65, 65)
 p1_explode_2 = sprite_sheet.subsurface(70, 301, 65, 65)
 p1_explode_3 = sprite_sheet.subsurface(136, 301, 65, 65)
@@ -572,8 +614,9 @@ while True:
                     bomb_snd.play()
                     print(f'Number of enemies AFTER bomb:  {len(enemies)}')
                 if event.key == pygame.K_e:
-                    closest_enemy()                    
-
+                    missile_fire(0, p1.rect.x, p1.rect.y)                    
+                if event.key == pygame.K_x:
+                    closest_enemy()
             if event.key == pygame.K_F1 and p1.lives>0:
                 if len(players) == 0:
                     create_player()
