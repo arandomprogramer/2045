@@ -8,6 +8,7 @@ import time
 import pygame
 import random
 import sys
+import math
 
 # some change 
 
@@ -184,11 +185,11 @@ class Fire(object):
             self.draw(screen)
 
 class Missile(object):
-    def __init__(self, type):
+    def __init__(self, type, x, y):
         self.image = missile_1
         self.rect = self.image.get_rect()
-        self.rect.x = 100
-        self.rect.y = 100
+        self.rect.x = x
+        self.rect.y = y
         self.firing_1 = Animation(1, [[50, missile_1]])
         self.e_firing = Animation(1, [[50, missile_1]])
         self.anim = self.firing_1
@@ -204,8 +205,49 @@ class Missile(object):
             self.rect.y += 5
             self.draw(screen)
         else:
-            self.rect.y -= 20
+            x_dist, y_dist, angle = self.guidance()
+            self.rect.y -= y_dist # y_dist calculated in guidance 20
+            self.rect.x -= x_dist #x_dist in guidance
+            # rotate missle to angle????
+            self.missle_rotate(angle)
             self.draw(screen)
+
+    def missle_rotate(self, angle=0):
+        self.image = pygame.transform.rotate(self.image, angle)
+        self.firing_1 = Animation(1, [[50, self.image]])
+        self.e_firing = Animation(1, [[50, self.image]])
+        self.anim = self.firing_1
+
+    def guidance(self):
+        c=7586347375346385477657564576576766348756
+        cm  = None
+        angle = 0   
+        x_dist = 0
+        y_dist = 0 # default distances
+        x= self.rect.x
+        y= self.rect.y
+        #print(f"Our missile position:  {x}, {y}")
+        for e in enemies:
+            ex = e.rect.center[0]
+            ey = e.rect.center[1]
+            if ey<0:
+                continue
+            x_distance = x - ex
+            y_distance = y - ey
+            dist = math.sqrt(x_distance**2+y_distance**2)
+            # print(f"Enemy postion: {ex}, {ey}   Distance: {dist}")
+            if dist==0:
+                continue
+            if dist<c:
+                c = dist
+                cm = e
+                x_dist = x_distance * (2/c)
+                y_dist = y_distance * (2/c)
+                angle = math.asin(y_distance/c)
+                
+        #print(f"Closest Enemy Distance: {c}")
+        return x_dist, y_dist, angle
+
 
 class Bomb(object):
     def __init__(self, type):
@@ -294,36 +336,16 @@ def create_shot(type, x, y):
     #     f.rect.width = 500
     #     f.rect.height = 100
     #     shots.append(f)
-def closest_enemy():
-    c=7586347375346385476348756
-    cm  = None
-    px = players[0].rect.x
-    py = players[0].rect.y
-    print(f"Our plane position:  {px}, {py}")
-    for e in enemies:
-        ex = e.rect.center[0]
-        ey = e.rect.center[1]
-        if ey<0:
-            continue
-        x_distance = px - ex
-        y_distance = py - ey
-        print(f"Enemy postion: {ex}, {ey}   Distance: {x_distance**2+y_distance**2}")
-        
-        if x_distance**2+y_distance**2<c:
-            c = x_distance**2+y_distance
-            cm = e
-    return cm
 
 def missile_fire(type, x, y):
     if type == 1:
-        f = Missile(type)
-        f.rect.x = x + 13
-        f.rect.y = y + 100
+        f = Missile(type, x+13, y+100)
         shots.append(f)
     else:
-        f = Missile(type)
-        f.rect.x = players[0].rect.x + 17
-        f.rect.y = players[0].rect.y - 101
+        x = players[0].rect.x + 17
+        y = players[0].rect.y - 101
+        f = Missile(type, x, y)
+
         shots.append(f)
 
 def update_shots():
@@ -615,8 +637,6 @@ while True:
                     print(f'Number of enemies AFTER bomb:  {len(enemies)}')
                 if event.key == pygame.K_e:
                     missile_fire(0, p1.rect.x, p1.rect.y)                    
-                if event.key == pygame.K_x:
-                    closest_enemy()
             if event.key == pygame.K_F1 and p1.lives>0:
                 if len(players) == 0:
                     create_player()
