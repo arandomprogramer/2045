@@ -308,6 +308,23 @@ class Menu(object):
         pygame.display.flip()
         pygame.time.delay(25)
 
+class Game_Over(object):
+    # TODO: finish this
+    def __init__(self):
+        self.press = Animation(1, [[500, press_start_1], [200, press_start_2]])
+        self.anim = self.press
+        self.exit = 0
+
+    def draw(self, dest):
+        self.anim.pos = (80, 250)
+        self.anim.draw(dest)
+
+    def update(self):
+        screen.blit(menu_img, (0, 0))
+        self.draw(screen)
+        pygame.display.flip()
+        pygame.time.delay(25)
+
 
 def create_shot(type, x, y):
     if type == 1:
@@ -651,7 +668,6 @@ while True:
         high_score = p1.score
         with open('high_score.txt', 'w') as f:
             f.write(str(high_score))
-
     if play_musc == 1:
         #pygame.mixer.music.play()
         pass
@@ -668,6 +684,9 @@ while True:
     check_hit()
     check_plane_hit()
     draw_stats()
+
+    if p1.lives==0:
+        
     pygame.display.flip()
     pygame.time.delay(25)
     if i%400 == 0:
