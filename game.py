@@ -313,7 +313,7 @@ def create_shot(type, x, y):
     if type == 1:
         f = Fire(type)
         f.rect.x = x + 13
-        f.rect.y = y + 40
+        f.rect.y = y + 71
         shots.append(f)
     else:
         f = Fire(type)
@@ -415,7 +415,7 @@ def draw_stats():
     p1_score_text = custom_font.render("PLAYER 1", True, white)
     high_score_text = custom_font.render("HIGH SCORE", True, gold)
     p1_points_text = custom_font.render(str(p1.score), True, light_grey)
-    high_score_points = custom_font.render(str(p1.score), True, light_grey)
+    high_score_points = custom_font.render(str(high_score), True, light_grey)
     p1_bomb_text = custom_font.render(str(p1.bombs), True, light_grey)
     screen.blit(p1_score_text, (10, 5))
     screen.blit(high_score_text, (187, 5))
@@ -527,7 +527,7 @@ gold = (255, 215, 0)
 # LOAD GRAPHICS
 sprite_sheet_file = '1945_sprite_sheet.png'
 sprite_sheet = pygame.image.load(sprite_sheet_file).convert()
-jet1 = pygame.image.load('f35_v2.png').convert()
+jet1 = pygame.image.load('f35_v3.png').convert()
 sprite_sheet.set_colorkey((0, 67, 171))
 jet1.set_colorkey((65, 245, 64))
 #p1_plane_1 = sprite_sheet.subsurface(4, 400, 65, 65)
@@ -536,9 +536,13 @@ jet1.set_colorkey((65, 245, 64))
 p1_plane_1 = jet1
 p1_plane_2 = jet1
 p1_plane_3 = jet1
-e_plane_1 = sprite_sheet.subsurface(202, 466, 32, 32)
-e_plane_2 = sprite_sheet.subsurface(235, 466, 32, 32)
-e_plane_3 = sprite_sheet.subsurface(268, 466, 32, 32)
+e_plane = pygame.image.load('mig_21.png').convert()
+e_plane.set_colorkey((0, 0, 0))
+e_plane= pygame.transform.scale(e_plane, (70,25) )
+e_plane= pygame.transform.rotate(e_plane, 90)
+e_plane_1 = e_plane
+e_plane_2 = e_plane
+e_plane_3 = e_plane
 explode_1 = sprite_sheet.subsurface(70, 169, 32, 32)
 explode_2 = sprite_sheet.subsurface(103, 169, 32, 32)
 explode_3 = sprite_sheet.subsurface(
@@ -571,9 +575,7 @@ menu_graphic = 'menu.png'
 water_bg = 'waterbgext.png'
 water_bg_ext = pygame.image.load(water_bg).convert()
 menu_img = pygame.image.load(menu_graphic).convert()
-e_plane_1.set_colorkey((0, 67, 171))
-e_plane_2.set_colorkey((0, 67, 171))
-e_plane_3.set_colorkey((0, 67, 171))
+
 explode_1.set_colorkey((0, 67, 171))
 explode_2.set_colorkey((0, 67, 171))
 explode_3.set_colorkey((0, 67, 171))
@@ -603,6 +605,9 @@ players.append(p1)
 menu_screen = Menu()
 menu_screen.exit = 0
 
+# Get highest score from file
+with open('high_score.txt', 'r') as f:
+    high_score = int(f.readline())
 
 # MAIN MENU LOOP
 while menu_screen.exit == 0:
@@ -637,11 +642,15 @@ while True:
                     print(f'Number of enemies AFTER bomb:  {len(enemies)}')
                 if event.key == pygame.K_e:
                     missile_fire(0, p1.rect.x, p1.rect.y)                    
-            if event.key == pygame.K_F1 and p1.lives>0:
+            if event.key == pygame.K_r and p1.lives>0:
                 if len(players) == 0:
                     create_player()
                     p1.lives-=1
 
+    if p1.score > high_score:
+        high_score = p1.score
+        with open('high_score.txt', 'w') as f:
+            f.write(str(high_score))
 
     if play_musc == 1:
         #pygame.mixer.music.play()
