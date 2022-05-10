@@ -79,6 +79,7 @@ class Player(object):
         self.hits = 0
         self.lives = 3
         self.bombs = 3
+        self.missiles = 4
 
     def draw(self, dest):
         self.anim.pos = self.rect
@@ -662,8 +663,9 @@ while True:
                     bomb_explosion()
                     bomb_snd.play()
                     print(f'Number of enemies AFTER bomb:  {len(enemies)}')
-                if event.key == pygame.K_e:
-                    missile_fire(0, p1.rect.x, p1.rect.y)                    
+                if event.key == pygame.K_e and p1.missiles > 0:
+                    missile_fire(0, p1.rect.x, p1.rect.y)
+                    p1.missiles -= 1                    
             if event.key == pygame.K_r and p1.lives>0:
                 if len(players) == 0:
                     create_player()
@@ -702,7 +704,9 @@ while True:
                     exit()
             game_over_screen.update()
 
-
+    if i %160 == 0 and p1.missiles <4:
+        p1.missiles +=1
+        print(f'missile count up to {p1.missiles}')
     pygame.display.flip()
     pygame.time.delay(25)
     if i%400 == 0:
