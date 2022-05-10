@@ -311,12 +311,15 @@ class Menu(object):
 class Game_Over(object):
     # TODO: finish this
     def __init__(self):
-        self.press = Animation(1, [[500, press_start_1], [200, press_start_2]])
+        game_over = pygame.image.load('game_over.jpg').convert()
+        game_over.set_colorkey((0, 0, 0))
+        game_over= pygame.transform.scale(game_over, (300,150) )
+        self.press = Animation(1, [[500, game_over], [200, press_start_2]])
         self.anim = self.press
         self.exit = 0
 
     def draw(self, dest):
-        self.anim.pos = (80, 250)
+        self.anim.pos = (10, 200)
         self.anim.draw(dest)
 
     def update(self):
@@ -618,13 +621,15 @@ play_musc = 1
 p1 = Player()
 players.append(p1)
 
-# CREATE MENU
-menu_screen = Menu()
-menu_screen.exit = 0
-
 # Get highest score from file
 with open('high_score.txt', 'r') as f:
     high_score = int(f.readline())
+
+# CREATE MENU
+menu_screen = Menu()
+menu_screen.exit = 0
+game_over_screen = Game_Over()
+game_over_screen.exit = 0
 
 # MAIN MENU LOOP
 while menu_screen.exit == 0:
@@ -685,8 +690,19 @@ while True:
     check_plane_hit()
     draw_stats()
 
-    if p1.lives==0:
-        
+    if p1.lives==1 and len(players) == 0:
+        while game_over_screen.exit == 0:
+            for event in pygame.event.get():
+                key = pygame.key.get_pressed()
+
+                if key[pygame.K_RETURN]:
+                    game_over_screen.exit = 1
+                    start_snd.play()
+                    pygame.time.delay(1000)
+                    exit()
+            game_over_screen.update()
+
+
     pygame.display.flip()
     pygame.time.delay(25)
     if i%400 == 0:
