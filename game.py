@@ -210,7 +210,7 @@ class Missile(object):
             self.rect.y -= y_dist # y_dist calculated in guidance 20
             self.rect.x -= x_dist #x_dist in guidance
             # rotate missle to angle????
-            self.missle_rotate(angle)
+            #self.missle_rotate(angle)
             self.draw(screen)
 
     def missle_rotate(self, angle=0):
@@ -324,7 +324,7 @@ class Game_Over(object):
         self.anim.draw(dest)
 
     def update(self):
-        screen.blit(menu_img, (0, 0))
+        screen.blit(end_screen, (0, 0))
         self.draw(screen)
         pygame.display.flip()
         pygame.time.delay(25)
@@ -517,7 +517,7 @@ def create_player():
 
 # CREATE ENEMIES
 
-enemy_difficulty=7
+enemy_difficulty=8
 def spawn_enemies():
     if len(enemies) < enemy_difficulty:
         create_enemy()
@@ -596,6 +596,7 @@ menu_graphic = 'menu.png'
 water_bg = 'waterbgext.png'
 water_bg_ext = pygame.image.load(water_bg).convert()
 menu_img = pygame.image.load(menu_graphic).convert()
+end_screen = pygame.image.load('endgamescreen.png').convert()
 
 explode_1.set_colorkey((0, 67, 171))
 explode_2.set_colorkey((0, 67, 171))
