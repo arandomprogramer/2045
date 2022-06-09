@@ -192,9 +192,10 @@ class Missile(object):
         self.rect.x = x
         self.rect.y = y
         self.firing_1 = Animation(1, [[50, missile_1]])
-        self.e_firing = Animation(1, [[50, missile_1]])
+        #self.e_firing = Animation(1, [[50, missile_1]])
         self.anim = self.firing_1
         self.type = type
+        self.missile_angle = 0
 
     def draw(self, dest):
         self.anim.pos = self.rect
@@ -206,23 +207,27 @@ class Missile(object):
             self.rect.y += 5
             self.draw(screen)
         else:
-            x_dist, y_dist, angle = self.guidance()
-            self.rect.y -= y_dist # y_dist calculated in guidance 20
-            self.rect.x -= x_dist #x_dist in guidance
+            x_dist, y_dist, increment_angle = self.guidance()
+            y = self.rect.y - y_dist # y_dist calculated in guidance 20
+            x = self.rect.x - x_dist #x_dist in guidance
             # rotate missle to angle????
-            #self.missle_rotate(angle)
+            self.missle_rotate(increment_angle)
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.y = y
             self.draw(screen)
 
-    def missle_rotate(self, angle=0):
-        self.image = pygame.transform.rotate(self.image, angle)
-        self.firing_1 = Animation(1, [[50, self.image]])
-        self.e_firing = Animation(1, [[50, self.image]])
-        self.anim = self.firing_1
+    def missle_rotate(self, increment_angle=0):
+        if increment_angle != 0:
+            self.image = pygame.transform.rotate(self.image, -increment_angle)
+            self.firing_1 = Animation(1, [[1, self.image]])
+            #self.e_firing = Animation(1, [[1, self.image]])
+            self.anim = self.firing_1
 
     def guidance(self):
         c=7586347375346385477657564576576766348756
         cm  = None
-        angle = 0   
+        increment_angle = 0   
         x_dist = 0
         y_dist = 0 # default distances
         x= self.rect.x
@@ -245,9 +250,10 @@ class Missile(object):
                 x_dist = x_distance * (2/c)
                 y_dist = y_distance * (2/c)
                 angle = math.asin(y_distance/c)
-                
+                increment_angle = angle - self.missile_angle
+                self.missile_angle=angle
         #print(f"Closest Enemy Distance: {c}")
-        return x_dist, y_dist, angle
+        return x_dist, y_dist, increment_angle
 
 
 class Bomb(object):
